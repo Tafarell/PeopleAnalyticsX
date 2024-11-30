@@ -150,4 +150,4 @@ def resultado():
     return render_template('resultado.html', resultado=resultado, cursos=cursos)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=port)
