@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupo BRBPO</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header>
+        <div class="title">
+            GRUPO BRBPO <span>  
+        </div>
+        <div class="entrar-container">
+            <a href="/process" class="entrar-btn">Entrar</a>
+        </div>
+    </header>
+
+    <!-- Imagem grande -->
+    <div class="image-container">
+        <img src="{{ url_for('static', filename='images/logo_grande.jpg') }}" alt="Logo Grande" class="large-image">
+    </div>
+
+</body>
+</html>

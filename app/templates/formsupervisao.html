@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário de Competências</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header>
+        <div class="title">GRUPO BRBPO <span>| QUESTIONÁRIO PARA O CARGO DE SUPERVISÃO</span></div>
+    </header>
+
+    <!-- Barra Azul -->
+    <div class="blue-bar">
+        <a href="/process" class="portal-button">PORTAL DO CANDIDATO</a>
+        <a href="/formdisc" class="portal-button">FORMULÁRIO DISC</a>
+    </div>
+
+<body>
+        <p>Responda às perguntas abaixo selecionando a opção que mais se aplica a você.</p>
+   
+        <form id="competencias-form" action="/submit" method="POST">
+            
+            <!-- Comunicação -->
+            <div class="page-container">
+            <section>
+                <h2>1. Comunicação</h2>
+                <label>a) Como você avalia sua capacidade de explicar processos de forma clara e objetiva?</label>
+                <div class="options" data-question="comunicacao_a">
+                    <button type="button" class="option" data-value="1">Muito ruim</button>
+                    <button type="button" class="option" data-value="2">Ruim</button>
+                    <button type="button" class="option" data-value="3">Regular</button>
+                    <button type="button" class="option" data-value="4">Boa</button>
+                    <button type="button" class="option" data-value="5">Excelente</button>
+                </div>
+
+                <label>b) Qual é a frequência com que você se mostra disponível para que a equipe compartilhe preocupações?</label>
+                <div class="options" data-question="comunicacao_b">
+                    <button type="button" class="option" data-value="1">Nunca</button>
+                    <button type="button" class="option" data-value="2">Raramente</button>
+                    <button type="button" class="option" data-value="3">Às vezes</button>
+                    <button type="button" class="option" data-value="4">Frequentemente</button>
+                    <button type="button" class="option" data-value="5">Sempre</button>
+                </div>
+
+                <label>c) Como você lida com a comunicação durante situações de conflito?</label>
+                <div class="options" data-question="comunicacao_c">
+                    <button type="button" class="option" data-value="1">Evito ou fujo do conflito</button>
+                    <button type="button" class="option" data-value="2">Tenho dificuldade para manter o controle</button>
+                    <button type="button" class="option" data-value="3">Tento resolver, mas de forma inconsistente</button>
+                    <button type="button" class="option" data-value="4">Mantenho a clareza com certo esforço</button>
+                    <button type="button" class="option" data-value="5">Comunico de forma clara e eficaz sempre</button>
+                </div>
+            </div>
+            </section>
+
+            <!-- Saber Ouvir -->
+            <div class="page-container">
+            <section>
+                <h2>2. Saber Ouvir</h2>
+                <label>a) Como você lida ao ouvir opiniões diferentes das suas?</label>
+                <div class="options" data-question="saber_ouvir_a">
+                    <button type="button" class="option" data-value="1">Ignoro as opiniões</button>
+                    <button type="button" class="option" data-value="2">Aceito apenas com resistência</button>
+                    <button type="button" class="option" data-value="3">Escuto, mas dificilmente aplico</button>
+                    <button type="button" class="option" data-value="4">Considero a maioria das sugestões</button>
+                    <button type="button" class="option" data-value="5">Valorizo e aplico sempre que possível</button>
+                </div>
+
+                <label>b) Qual é sua reação diante de feedbacks críticos?</label>
+                <div class="options" data-question="saber_ouvir_b">
+                    <button type="button" class="option" data-value="1">Reajo defensivamente</button>
+                    <button type="button" class="option" data-value="2">Fico desconfortável, mas aceito</button>
+                    <button type="button" class="option" data-value="3">Aceito, mas não aplico de imediato</button>
+                    <button type="button" class="option" data-value="4">Reflito e aplico gradualmente</button>
+                    <button type="button" class="option" data-value="5">Aceito e aplico de forma imediata</button>
+                </div>
+            </div>
+            </section>
+
+            <!-- Liderança Estratégica -->
+            <div class="page-container">
+            <section>
+                <h2>3. Liderança Estratégica</h2>
+                <label>a) Como você avalia sua capacidade de definir metas alinhadas aos objetivos da empresa?</label>
+                <div class="options" data-question="lideranca_a">
+                    <button type="button" class="option" data-value="1">Nunca alinho metas</button>
+                    <button type="button" class="option" data-value="2">Alinho raramente</button>
+                    <button type="button" class="option" data-value="3">Alinho de forma limitada</button>
+                    <button type="button" class="option" data-value="4">Alinho frequentemente</button>
+                    <button type="button" class="option" data-value="5">Sempre faço alinhamento claro</button>
+                </div>
+
+                <label>b) Com que frequência você incentiva a equipe a superar suas metas?</label>
+                <div class="options" data-question="lideranca_b">
+                    <button type="button" class="option" data-value="1">Nunca incentivo</button>
+                    <button type="button" class="option" data-value="2">Incentivo raramente</button>
+                    <button type="button" class="option" data-value="3">Incentivo apenas em momentos críticos</button>
+                    <button type="button" class="option" data-value="4">Incentivo regularmente</button>
+                    <button type="button" class="option" data-value="5">Sempre incentivo de forma ativa</button>
+                </div>
+            </div>
+            </section>
+
+             <!-- Desenvolvimento de Talentos -->
+             <div class="page-container">
+             <section>
+                <h2>4. Desenvolvimento de Talentos</h2>
+                <label>a) Como você avalia sua capacidade de desenvolver talentos na equipe?</label>
+                <div class="options" data-question="desenvolvimento_talentos_a">
+                    <button type="button" class="option" data-value="1">Não desenvolvo talentos</button>
+                    <button type="button" class="option" data-value="2">Raramente identifico talentos</button>
+                    <button type="button" class="option" data-value="3">Faço desenvolvimento limitado</button>
+                    <button type="button" class="option" data-value="4">Desenvolvo regularmente</button>
+                    <button type="button" class="option" data-value="5">Foco sempre no desenvolvimento contínuo</button>
+                </div>
+
+                <label>b) Com que frequência você dá feedbacks construtivos à equipe?</label>
+                <div class="options" data-question="desenvolvimento_talentos_b">
+                    <button type="button" class="option" data-value="1">Nunca</button>
+                    <button type="button" class="option" data-value="2">Raramente</button>
+                    <button type="button" class="option" data-value="3">Às vezes</button>
+                    <button type="button" class="option" data-value="4">Frequentemente</button>
+                    <button type="button" class="option" data-value="5">Sempre</button>
+                </div>
+            </div>
+            </section>
+
+            <!-- Pensamento Analítico -->
+            <div class="page-container">
+            <section>
+                <h2>5. Pensamento Analítico</h2>
+                <label>a) Como você avalia sua capacidade de tomar decisões com base em dados?</label>
+                <div class="options" data-question="pensamento_analitico_a">
+                    <button type="button" class="option" data-value="1">Nunca uso dados</button>
+                    <button type="button" class="option" data-value="2">Uso dados raramente</button>
+                    <button type="button" class="option" data-value="3">Uso dados parcialmente</button>
+                    <button type="button" class="option" data-value="4">Uso dados frequentemente</button>
+                    <button type="button" class="option" data-value="5">Baseio todas as decisões em dados</button>
+                </div>
+
+                <label>b) Como você identifica a causa raiz de problemas complexos?</label>
+                <div class="options" data-question="pensamento_analitico_b">
+                    <button type="button" class="option" data-value="1">Não identifico</button>
+                    <button type="button" class="option" data-value="2">Tenho dificuldade para identificar</button>
+                    <button type="button" class="option" data-value="3">Identifico com ajuda de terceiros</button>
+                    <button type="button" class="option" data-value="4">Identifico em grande parte dos casos</button>
+                    <button type="button" class="option" data-value="5">Sempre identifico de forma precisa</button>
+                </div>
+            </div>
+            </section>
+
+            <!-- Planejamento e Organização -->
+            <div class="page-container">
+            <section>
+                <h2>6. Planejamento e Organização</h2>
+                <label>a) Como você avalia sua capacidade de planejar tarefas para cumprir prazos?</label>
+                <div class="options" data-question="planejamento_a">
+                    <button type="button" class="option" data-value="1">Não planejo</button>
+                    <button type="button" class="option" data-value="2">Planejo de forma ineficaz</button>
+                    <button type="button" class="option" data-value="3">Planejo, mas com inconsistências</button>
+                    <button type="button" class="option" data-value="4">Planejo regularmente com bons resultados</button>
+                    <button type="button" class="option" data-value="5">Planejo de forma eficiente e consistente</button>
+                </div>
+
+                <label>b) Com que frequência você ajusta planos quando necessário?</label>
+                <div class="options" data-question="planejamento_b">
+                    <button type="button" class="option" data-value="1">Nunca ajusto</button>
+                    <button type="button" class="option" data-value="2">Raramente ajusto</button>
+                    <button type="button" class="option" data-value="3">Ajusto apenas quando solicitado</button>
+                    <button type="button" class="option" data-value="4">Ajusto conforme necessário</button>
+                    <button type="button" class="option" data-value="5">Ajusto rapidamente e de forma proativa</button>
+                </div>
+            </div>
+            </section>
+
+            <!-- Inovação -->
+            <div class="page-container">
+            <section>
+                <h2>7. Inovação</h2>
+                <label>a) Como você avalia sua abertura para novas ideias e soluções?</label>
+                <div class="options" data-question="inovacao_a">
+                    <button type="button" class="option" data-value="1">Resisto a novas ideias</button>
+                    <button type="button" class="option" data-value="2">Tenho dificuldade para aceitar inovações</button>
+                    <button type="button" class="option" data-value="3">Aceito novas ideias, mas raramente aplico</button>
+                    <button type="button" class="option" data-value="4">Adoto novas ideias com frequência</button>
+                    <button type="button" class="option" data-value="5">Sempre busco e aplico novas soluções</button>
+                </div>
+
+                <label>b) Com que frequência você incentiva sua equipe a inovar?</label>
+                <div class="options" data-question="inovacao_b">
+                    <button type="button" class="option" data-value="1">Nunca</button>
+                    <button type="button" class="option" data-value="2">Raramente</button>
+                    <button type="button" class="option" data-value="3">Às vezes</button>
+                    <button type="button" class="option" data-value="4">Frequentemente</button>
+                    <button type="button" class="option" data-value="5">Sempre</button>
+                </div>
+            </div>
+            </section>
+
+                 <!-- Flexibilidade e Adaptação -->
+                 <div class="page-container">
+                 <section>
+                    <h2>8. Flexibilidade e Adaptação</h2>
+                    <label>a) Como você avalia sua capacidade de se adaptar a mudanças inesperadas?</label>
+                    <div class="options" data-question="flexibilidade_a">
+                        <button type="button" class="option" data-value="1">Não me adapto</button>
+                        <button type="button" class="option" data-value="2">Tenho dificuldade em me adaptar</button>
+                        <button type="button" class="option" data-value="3">Adapto-me lentamente</button>
+                        <button type="button" class="option" data-value="4">Adapto-me de forma consistente</button>
+                        <button type="button" class="option" data-value="5">Adapto-me rapidamente e com facilidade</button>
+                    </div>
+    
+                    <label>b) Com que frequência você incentiva sua equipe a inovar?</label>
+                    <div class="options" data-question="flexibilidade_b">
+                        <button type="button" class="option" data-value="1">Nunca</button>
+                        <button type="button" class="option" data-value="2">Raramente</button>
+                        <button type="button" class="option" data-value="3">Às vezes</button>
+                        <button type="button" class="option" data-value="4">Frequentemente</button>
+                        <button type="button" class="option" data-value="5">Sempre</button>
+                    </div>
+                </div>
+                </section>
+
+              <!-- Botão de Envio -->
+              <button type="button" class="submit-btn" id="submit-btn">Enviar Respostas</button>
+            </form>
+        </div>
+    
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("competencias-form");
+
+    form.addEventListener("click", function (event) {
+        if (event.target.classList.contains("option")) {
+            const question = event.target.parentElement.dataset.question;
+
+            // Remove seleção anterior
+            document.querySelectorAll(`[data-question="${question}"] .option`).forEach(btn => {
+                btn.classList.remove("selected");
+            });
+
+            // Adiciona a seleção atual
+            event.target.classList.add("selected");
+        }
+    });
+
+    // Envio do formulário
+    document.getElementById("submit-btn").addEventListener("click", function () {
+        const selectedValues = {};
+
+        // Coletar valores selecionados
+        document.querySelectorAll(".options").forEach(optionGroup => {
+            const question = optionGroup.dataset.question;
+            const selectedOption = optionGroup.querySelector(".option.selected");
+
+            if (selectedOption) {
+                selectedValues[question] = selectedOption.dataset.value;
+            }
+        });
+
+        // Verificar se todas as perguntas foram respondidas
+        if (Object.keys(selectedValues).length < document.querySelectorAll(".options").length) {
+            alert("Por favor, responda a todas as perguntas antes de enviar.");
+            return;
+        }
+
+        // Enviar dados via fetch
+        fetch("/submit", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(selectedValues),
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.redirect_url) {
+                    // Redirecionar para a URL retornada pelo backend
+                    console.log("Redirecionando para:", data.redirect_url);
+                    window.location.href = data.redirect_url;
+                } else {
+                    alert("Erro ao processar os dados.");
+                }
+            })
+            .catch(error => {
+                console.error("Erro:", error);
+                alert("Erro ao enviar os dados. Verifique o console para mais detalhes.");
+            });
+    });
+});
+
+        </script>
+        
+        
+    </body>
+    </html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado da Avaliação</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header>
+        <div class="title">
+            GRUPO BRBPO <span>| RESULTADO DA AVALIAÇÃO</span>
+        </div>
+    </header>
+
+    <!-- Barra Azul -->
+    <div class="blue-bar">
+        <a href="/process" class="portal-button">PORTAL DO CANDIDATO</a>
+        <a href="/formdisc" class="portal-button">FORMULÁRIO DISC</a>
+    </div>
+
+    <!-- Container Principal -->
+    <div class="page-container">
+        <div class="container">
+            <div class="resultado {% if resultado == 'Aprovado' %}aprovado{% else %}reprovado{% endif %}">
+                {{ resultado }}
+            </div>
+            <div class="mensagem">
+                {% if resultado == "Aprovado" %}
+                    Parabéns pelo excelente resultado! Você está aprovado e avançará para as próximas etapas do processo.
+                {% else %}
+                    Infelizmente, não foi desta vez. Recomendamos os seguintes cursos para ajudar a melhorar seu desempenho:
+                {% endif %}
+            </div>
+            
+            {% if resultado == "Reprovado" %}
+            <div class="curso-container">
+                {% for curso in cursos %}
+                <div class="curso-card">
+                    <!-- Substituído o iframe por uma imagem placeholder -->
+                    <img src="https://via.placeholder.com/250x140?text=Imagem+do+Curso" alt="Imagem do Curso">
+                    <div class="info">
+                        <h3>{{ curso[0] }}</h3>
+                        <!-- Link direto para o curso -->
+                        <a href="{{ curso[1] }}" target="_blank">Acessar curso</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Contêiner do botão Voltar -->
+    <div class="voltar-container">
+        <a href="/formsupervisao" class="voltar-btn">Voltar ao início</a>
+    </div>
+
+</body>
+</html>

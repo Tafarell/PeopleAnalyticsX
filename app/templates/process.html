@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processos Seletivos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header>
+        <div class="title">
+            GRUPO BRBPO <span>| PROCESSOS SELETIVOS</span>
+        </div>
+
+    </header>
+
+    <div class="blue-bar">
+        <a href="/process" class="portal-button">PORTAL DO CANDIDATO</a>
+        <a href="/formdisc" class="portal-button">FORMULÁRIO DISC</a>
+    </div>
+
+    <!-- Seção Inscrições Abertas -->
+    <div class="section">
+        <div class="header">INSCRIÇÕES ABERTAS</div>
+        <div class="description">
+            Inscreva-se para participar de nossas seleções.
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Edital</th>
+                        <th>Período de Inscrição</th>
+                        <th>Opções</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>EDITAL N° 01/2024 - Supervisão</td>
+                        <td>20/11/2024 até 15/12/2024</td>
+                        <td><a href="/formsupervisao" class="view-button">Inscrever</a></td>
+                    </tr>
+                    <tr>
+                        <td>EDITAL N° 02/2024 - Auxiliar Administrativo</td>
+                        <td>20/11/2024 até 20/12/2024</td>
+                        <td><a href="#" class="view-button">Inscrever</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

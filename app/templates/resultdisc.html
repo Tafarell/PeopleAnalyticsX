@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado DISC</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    
+
+        <style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7f6;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.content-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* Container dos gráficos */
+.chart-container {
+    flex: 1;
+    max-width: 700px; /* Tamanho máximo do gráfico */
+    height: 800px; /* Altura do gráfico */
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Container do perfil */
+.profile-container {
+    flex: 2;
+    max-width: 700px;
+    height: 750px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-container h2 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.profile-description {
+    font-size: 1.1rem;
+    color: #555;
+}
+
+.profile-description h3 {
+    color: #007bff;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.profile-description ul {
+    margin-left: 20px;
+    list-style-type: disc;
+}
+
+.profile-description li {
+    margin-bottom: 8px;
+}
+
+.profile-description .highlight {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #007bff;
+    padding: 8px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 0.9rem;
+    color: #777;
+}
+
+/* Responsividade para telas pequenas e médias */
+@media (max-width: 1024px) {
+    .chart-container,
+    .profile-container {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .content-wrapper {
+        flex-direction: column; /* Muda o layout para coluna */
+        gap: 20px;
+    }
+}
+
+/* Responsividade para telas menores que 768px */
+@media (max-width: 768px) {
+    .title {
+        font-size: 1.5rem;
+    }
+
+    .profile-description {
+        font-size: 1rem;
+    }
+
+    .profile-description h3 {
+        font-size: 1.1rem;
+    }
+
+    .profile-container {
+        height: auto; /* Ajusta a altura do perfil */
+    }
+
+    footer {
+        font-size: 0.8rem;
+    }
+
+    .chart-container {
+        max-width: 100%;
+        height: 500px; /* Ajusta a altura do gráfico */
+    }
+}
+
+/* Responsividade para telas muito pequenas (por exemplo, smartphones) */
+@media (max-width: 480px) {
+    body {
+        font-size: 14px; /* Ajuste de fonte */
+    }
+
+    .title {
+        font-size: 1.3rem;
+    }
+
+    .profile-container {
+        padding: 15px;
+    }
+
+    .chart-container {
+        padding: 15px;
+    }
+
+    footer {
+        font-size: 0.7rem;
+    }
+
+    .profile-description {
+        font-size: 0.9rem;
+    }
+
+    .profile-description h3 {
+        font-size: 1rem;
+    }
+}
+        
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="title">GRUPO BRBPO <span>| RESULTADO DISC</span></div>
+</header>
+    <div class="blue-bar">
+        <a href="/process" class="portal-button">PORTAL DO CANDIDATO</a>
+        <a href="/formdisc" class="portal-button">FORMULÁRIO DISC</a>
+    </div>
+
+<div class="container">
+    <div class="title">
+        <h1>Resultado DISC</h1>
+    </div>
+    <div class="content-wrapper">
+        <div class="chart-container">
+            <canvas id="discChart" width="400" height="400"></canvas>
+        </div>
+        
+        <div class="profile-container" id="profile-info">
+            <!-- A descrição será inserida aqui via JavaScript -->
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2024 DISC Analysis - Todos os direitos reservados</p>
+            </footer>
+</div>
+
+<script>
+    // Função para obter os parâmetros da URL
+    function getURLParams() {
+        const params = new URLSearchParams(window.location.search);
+        return {
+            D: parseInt(params.get('D')) || 0,
+            I: parseInt(params.get('I')) || 0,
+            E: parseInt(params.get('E')) || 0,
+            C: parseInt(params.get('C')) || 0
+        };
+    }
+
+    // Função para calcular o percentual de cada perfil
+    function calculatePercentages(D, I, E, C) {
+        const total = D + I + E + C;
+        const D_percent = (D / total) * 100;
+        const I_percent = (I / total) * 100;
+        const E_percent = (E / total) * 100;
+        const C_percent = (C / total) * 100;
+
+        return { D_percent, I_percent, E_percent, C_percent };
+    }
+
+    // Função para exibir os resultados do perfil no HTML
+    function displayProfile(D_percent, I_percent, E_percent, C_percent) {
+        const profiles = {
+            "Dominante": {
+                "Frase": "Fazer e impulsionar o mundo",
+                "Características gerais": "Direto, Impositivo, Trabalhador Compulsivo",
+                "Motivação": ["Ter o controle", "Ser o melhor", "Resultados"],
+                "Necessidade básica": "Controle",
+                "Como reconhecê-los": "Energia exorbitante, segurança de si mesmo, tom de voz forte, opiniões contundentes, fala rapidamente",
+                "Vantagens ou Forças": ["Perseverança", "Energia", "Visão – Não existem obstáculos insuperáveis"],
+                "Desvantagens ou Debilidades": ["Egocêntrico", "Auto-estima alta", "Explosivo", "Primeiro reage, depois pensa", "Impaciente", "Agressivo"],
+                "Como melhorar a comunicação com um Dominante": ["Seja suave", "dê seu lugar a ele", "peça as coisas com boas maneiras", "Elogie-o", "Espere até que ele se tranquilize"],
+                "Como um Dominante pode melhorar sua comunicação com os outros": "Se concentre nas pessoas",
+                "Tempo livre": "Explora, adquire, se motiva mais para atingir suas metas",
+                "Sobre pressão": "Fala diretamente, afirma suas opiniões",
+                "Caráter": "Extrovertido",
+                "Medo": "De perder o controle",
+                "Outras Denominações": "Autoritário, agressivo",
+                "Elemento associado": "Fogo"
+            },
+            "Influente": {
+                "Frase": "A inspiração e a alegria do mundo",
+                "Características gerais": "Confia nos demais, Entusiasmado, Confiante",
+                "Motivação": ["Popular", "Aceitação", "Conexão Emocional"],
+                "Necessidade básica": "Atenção",
+                "Como reconhecê-los": "Por sua alegria, fala constantemente, é amigável, impontual, distraído",
+                "Vantagens ou Forças": ["Popular", "Aceitação"],
+                "Desvantagens ou Debilidades": ["Egocêntrico", "Falta de disciplina"],
+                "Como melhorar a comunicação com um Influente": ["Escute mais", "evite crítica direta"],
+                "Como um Influente pode melhorar sua comunicação com os outros": "Se concentre nas pessoas",
+                "Tempo livre": "Sai para se divertir",
+                "Sobre pressão": "Busca aprovação",
+                "Caráter": "Extrovertido",
+                "Medo": "Ser considerado chato e não ser aceito",
+                "Outras Denominações": "Social, Sanguíneo, Catalisador",
+                "Elemento associado": "Ar"
+            },
+            "Estável": {
+                "Frase": "A paz e a tranquilidade do mundo",
+                "Características gerais": "Não sabem dizer 'Não', Inexpressivo, Evita o confronto",
+                "Motivação": ["Aprovação"],
+                "Necessidade básica": "Paz",
+                "Como reconhecê-los": "Caminham devagar, com calma, em ritmo suave",
+                "Vantagens ou Forças": ["Suavidade", "Paciência", "Calma"],
+                "Desvantagens ou Debilidades": ["Falta de energia", "Passividade"],
+                "Como melhorar a comunicação com um Estável": ["Evite pressa", "mostre tranquilidade"],
+                "Como um Estável pode melhorar sua comunicação com os outros": "Seja mais assertivo",
+                "Tempo livre": "Gosta de atividades relaxantes, família",
+                "Sobre pressão": "Mantenha a calma",
+                "Caráter": "Introvertido",
+                "Medo": "De se confrontar, de agressões e principalmente das MUDANÇAS",
+                "Outras Denominações": "Paciente, Sereno",
+                "Elemento associado": "Água"
+            },
+            "Conformidade": {
+                "Frase": "Estratégias e filosofias do mundo",
+                "Características gerais": "Dedicado, Detalhista, Confiável",
+                "Motivação": ["Desafios mentais"],
+                "Necessidade básica": "Ordem",
+                "Como reconhecê-los": "Atitudes sistemáticas e meticulosas",
+                "Vantagens ou Forças": ["Detalhista", "Preciso"],
+                "Desvantagens ou Debilidades": ["Perfeccionismo excessivo", "Dúvida"],
+                "Como melhorar a comunicação com um Conformista": ["Dê tempo para refletir"],
+                "Como um Conformista pode melhorar sua comunicação com os outros": "Seja mais flexível",
+                "Tempo livre": "Organiza o tempo, busca produtividade",
+                "Sobre pressão": "Fica detalhado e controlado",
+                "Caráter": "Introvertido",
+                "Medo": "Do Irracional, de equivocar-se, de não ser compreendido",
+                "Outras Denominações": "Analítico, Cumpridor, Melancólico",
+                "Elemento associado": "Terra"
+            },
+            // Continue a mesma estrutura para os outros perfis: Influente, Estável, Conformidade
+        };
+
+        // Objeto com percentuais de cada perfil
+const percentuais = {
+    Dominante: D_percent,
+    Influente: I_percent,
+    Estável: E_percent,
+    Conformidade: C_percent
+};
+
+// Determinar o perfil com o maior percentual
+let maiorPerfil = "";
+let maiorPercentual = 0;
+
+// Verifique os percentuais e determine o maior
+Object.keys(percentuais).forEach(profile => {
+    if (percentuais[profile] > maiorPercentual) {
+        maiorPerfil = profile;
+        maiorPercentual = percentuais[profile];
+    }
+});
+
+// Agora que maiorPerfil foi determinado, você pode construir o HTML
+let output = `<h2>Seu perfil é ${maiorPerfil}</h2>`;
+
+// Verificar se o perfil existe no objeto 'profiles'
+if (profiles[maiorPerfil]) {
+    // Adicionar frase motivacional com valor padrão
+    output += `<p class="highlight"><strong>Frase motivacional:</strong> ${profiles[maiorPerfil]?.Frase || "Descrição não disponível."}</p>`;
+
+    // Verificar se há características adicionais para o perfil
+    if (Object.keys(profiles[maiorPerfil]).length > 1) {
+        output += `<div class="profile-description"><h3>Características do perfil:</h3><ul>`;
+
+        // Adicionar características do perfil (exceto a frase motivacional)
+        Object.keys(profiles[maiorPerfil]).forEach(key => {
+            if (key !== "Frase") {
+                const value = profiles[maiorPerfil][key];
+                output += `<li><strong>${key}:</strong> ${
+                    Array.isArray(value) 
+                        ? value.join(', ') 
+                        : value || "Não disponível."
+                }</li>`;
+            }
+        });
+
+        output += `</ul></div>`;
+    } else {
+        output += `<p>Características adicionais não disponíveis para o perfil ${maiorPerfil}.</p>`;
+    }
+} else {
+    output += `<p>Erro: Perfil dominante não identificado ou descrição indisponível.</p>`;
+}
+
+return output;
+    }
+
+    // Configurações do gráfico
+const { D, I, E, C } = getURLParams();
+const { D_percent, I_percent, E_percent, C_percent } = calculatePercentages(D, I, E, C);
+
+const ctx = document.getElementById('discChart').getContext('2d');
+const discChart = new Chart(ctx, {
+    type: 'bar',  // Gráfico de barras
+    data: {
+        labels: ['Dominante', 'Influente', 'Estável', 'Conformidade'], // Labels no eixo Y
+        datasets: [{
+            label: 'Percentual',
+            data: [D_percent, I_percent, E_percent, C_percent],  // Dados dos percentuais
+            backgroundColor: ['#ff6347', '#ffa500', '#32cd32', '#4682b4'], // Cores das barras
+            borderColor: ['#ff6347', '#ffa500', '#32cd32', '#4682b4'],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        indexAxis: 'y',  // Gráfico de barras horizontais
+        plugins: {
+            legend: {
+                display: false // Não mostrar a legenda
+            },
+            tooltip: {
+                enabled: false, // Desativa o tooltip (já vamos mostrar os valores nas barras)
+            },
+            datalabels: {
+                display: true,
+                color: '#ffffff',  // Cor do texto (branco)
+                formatter: (value) => value.toFixed(2) + '%', // Formatação do valor mostrado nas barras
+                anchor: 'end', // Anexa o texto no final da barra
+                align: 'start', // Alinha o texto à esquerda dentro da barra
+                font: {
+                    weight: 'bold', // Peso da fonte (negrito)
+                    size: 16 // Tamanho da fonte
+                }
+            }
+        },
+        scales: {
+            x: {
+                beginAtZero: true,
+                title: {
+                    display: false,
+                    text: 'Percentual (%)'
+                },
+                grid: {
+                    display: false // Remove as linhas de grade
+                },
+                ticks: {
+                    callback: function(value) {
+                        return value + '%'; // Adiciona o símbolo de porcentagem no eixo X
+                    }
+                }
+            },
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Perfil'
+                },
+                grid: {
+                    display: false // Remove as linhas de grade
+                }
+            }
+        }
+    },
+    plugins: [ChartDataLabels] // Adiciona o plugin explicitamente
+});
+
+
+    document.getElementById('profile-info').innerHTML = displayProfile(D_percent, I_percent, E_percent, C_percent);
+</script>
+<div class="voltar-container">
+    <a href="/formdisc" class="voltar-btn">Voltar ao início</a>
+</div>
+
+</body>
+</html>

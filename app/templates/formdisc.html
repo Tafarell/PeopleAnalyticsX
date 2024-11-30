@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste DISC</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+    <script>
+// Variáveis de controle
+let totalQuestions = 26;  // Total de questões
+let currentQuestionIndex = 0;  // Índice da questão atual
+let selectedAnswers = {};
+
+// Inicializa as respostas para cada pergunta
+for (let i = 1; i <= 26; i++) {
+    selectedAnswers[`question${i}`] = {};
+}
+
+// Mapeamento das subquestões para grupos DISC
+const subquestionToDISC = {
+    subquestion1: "D", subquestion2: "I", subquestion3: "E", subquestion4: "C",
+subquestion5: "C", subquestion6: "I", subquestion7: "E", subquestion8: "D",
+subquestion9: "D", subquestion10: "E", subquestion11: "I", subquestion12: "C",
+subquestion13: "E", subquestion14: "I", subquestion15: "D", subquestion16: "C",
+subquestion17: "I", subquestion18: "D", subquestion19: "E", subquestion20: "C",
+subquestion21: "D", subquestion22: "I", subquestion23: "E", subquestion24: "C",
+subquestion25: "E", subquestion26: "I", subquestion27: "D", subquestion28: "C",
+subquestion29: "D", subquestion30: "I", subquestion31: "C", subquestion32: "E",
+subquestion33: "E", subquestion34: "I", subquestion35: "D", subquestion36: "C",
+subquestion37: "C", subquestion38: "I", subquestion39: "D", subquestion40: "E",
+subquestion41: "C", subquestion42: "D", subquestion43: "E", subquestion44: "I",
+subquestion45: "D", subquestion46: "E", subquestion47: "I", subquestion48: "C",
+subquestion49: "C", subquestion50: "I", subquestion51: "D", subquestion52: "E",
+subquestion53: "D", subquestion54: "I", subquestion55: "E", subquestion56: "C",
+subquestion57: "C", subquestion58: "D", subquestion59: "E", subquestion60: "I",
+subquestion61: "E", subquestion62: "D", subquestion63: "I", subquestion64: "C",
+subquestion65: "C", subquestion66: "E", subquestion67: "I", subquestion68: "D",
+subquestion69: "C", subquestion70: "I", subquestion71: "E", subquestion72: "D",
+subquestion73: "D", subquestion74: "C", subquestion75: "E", subquestion76: "I",
+subquestion77: "D", subquestion78: "C", subquestion79: "E", subquestion80: "I",
+subquestion81: "C", subquestion82: "I", subquestion83: "E", subquestion84: "D",
+subquestion85: "D", subquestion86: "I", subquestion87: "C", subquestion88: "E",
+subquestion89: "I", subquestion90: "D", subquestion91: "E", subquestion92: "C",
+subquestion93: "E", subquestion94: "I", subquestion95: "D", subquestion96: "C",
+subquestion97: "C", subquestion98: "I", subquestion99: "E", subquestion100: "D",
+subquestion101: "E", subquestion102: "I", subquestion103: "D", subquestion104: "C"
+};
+
+// Função para selecionar uma opção
+function selectOption(event) {
+    const button = event.target;
+    const subquestion = button.closest('.subquestion');
+    const questionId = subquestion.closest('.quiz-question').id;
+    const subquestionId = subquestion.id;
+    const weight = button.getAttribute('data-weight');
+
+    // Desmarcar todas as opções dentro da mesma subpergunta
+    subquestion.querySelectorAll('.answer-option').forEach(opt => opt.classList.remove('selected'));
+
+    // Marcar a opção clicada
+    button.classList.add('selected');
+
+    // Armazenar a resposta
+    selectedAnswers[questionId][subquestionId] = weight;
+
+    // Atualiza a desativação das opções para a questão atual
+    deactivateOptions(questionId);
+}
+
+// Função para desativar as opções já selecionadas na questão atual
+function deactivateOptions(questionId) {
+    const allButtons = document.querySelectorAll(`#${questionId} .answer-option`);
+    const selectedWeights = Object.values(selectedAnswers[questionId]);
+
+    allButtons.forEach(button => {
+        const weight = button.getAttribute('data-weight');
+        if (selectedWeights.includes(weight) && !button.classList.contains('selected')) {
+            button.disabled = true;
+            button.classList.add('disabled');
+        } else {
+            button.disabled = false;
+            button.classList.remove('disabled');
+        }
+    });
+}
+
+// Função para verificar se todas as subperguntas foram respondidas
+function checkAnswers(questionId) {
+    const subquestions = document.querySelectorAll(`#${questionId} .subquestion`);
+    let allAnswered = true;
+
+    subquestions.forEach(subquestion => {
+        const selected = subquestion.querySelector('.answer-option.selected');
+        if (!selected) {
+            allAnswered = false;
+        }
+    });
+
+    return allAnswered;
+}
+
+// Função para avançar para a próxima pergunta
+function nextQuestion() {
+    const currentQuestion = document.querySelector('.quiz-question.active');
+    const nextQuestion = currentQuestion ? currentQuestion.nextElementSibling : null;
+    const questionId = currentQuestion.id;
+
+    // Verifica se todas as subperguntas foram respondidas
+    if (checkAnswers(questionId)) {
+        currentQuestion.classList.remove('active'); // Ocultar a pergunta atual
+
+        // Exibe a próxima pergunta
+        if (nextQuestion && nextQuestion.classList.contains('quiz-question')) {
+            nextQuestion.classList.add('active'); // Exibe a próxima pergunta
+            currentQuestionIndex++; // Atualiza o índice da pergunta
+            updateProgressBar(); // Atualiza a barra de progresso
+        } else if (isQuizComplete()) {
+            // Se for a última pergunta, oculta o botão "Próxima Pergunta" e mostra o botão "Ver Resultado"
+            document.getElementById('btn-next').style.display = 'none';
+            showResultButton(); // Exibe o botão "Ver Resultado"
+        }
+    } else {
+        alert('Por favor, responda todas as subperguntas!');
+    }
+}
+
+// Função para atualizar a barra de progresso
+function updateProgressBar() {
+    const progressText = document.getElementById('progress-text');
+    const progressBar = document.getElementById('progress-bar');
+
+    // Atualiza o texto (Exemplo: "1/2")
+    progressText.textContent = `${currentQuestionIndex + 1}/${totalQuestions}`;
+
+    // Calcula a porcentagem do progresso
+    const progressPercentage = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+
+    // Atualiza a barra de progresso
+    progressBar.style.width = `${progressPercentage}%`;
+}
+
+// Função para inicializar o quiz
+window.onload = function() {
+    const questions = document.querySelectorAll('.quiz-question');
+    questions[0].classList.add('active');  // Exibe a primeira pergunta inicialmente
+    updateProgressBar();  // Inicializa a barra de progresso
+}
+
+// Função para verificar se o quiz foi completado
+function isQuizComplete() {
+    return Object.keys(selectedAnswers).every(questionId => {
+        const subquestions = document.querySelectorAll(`#${questionId} .subquestion`);
+        return Array.from(subquestions).every(subquestion => {
+            const buttons = subquestion.querySelectorAll('button');
+            return Array.from(buttons).some(button => button.classList.contains('selected'));
+        });
+    });
+}
+
+// Função para gerar o totalizador dos grupos DISC
+function generateTotalizer(selectedAnswers) {
+    const totalizer = { D: 0, I: 0, E: 0, C: 0 };
+
+    // Itera sobre as respostas selecionadas
+    Object.keys(selectedAnswers).forEach(questionId => {
+        const subquestions = selectedAnswers[questionId];
+
+        // Itera sobre as subperguntas e suas respostas
+        Object.keys(subquestions).forEach(subquestionId => {
+            // Obtém o grupo do mapeamento
+            const group = subquestionToDISC[subquestionId];
+            // Obtém o valor da resposta (certifique-se de que é um número)
+            const answerValue = Number(subquestions[subquestionId]); // Converte para número
+
+            // Depuração: Verifica o que está sendo acessado
+            console.log(`Subpergunta: ${subquestionId}, Grupo: ${group}, Valor: ${answerValue}`);
+
+            // Verifica se o grupo existe e se o valor é numérico
+            if (group && !isNaN(answerValue)) {
+                totalizer[group] += answerValue; // Soma o valor ao totalizador do grupo
+            } else {
+                console.log(`Resposta inválida ou não numérica para ${subquestionId}: ${answerValue}`);
+            }
+        });
+    });
+
+    return totalizer;
+}
+// Função para criar e configurar o botão "Ver Resultado"
+function setupResultButton() {
+    let resultButton = document.querySelector('.btn-nextresult');
+    
+    // Cria o botão "Ver Resultado" caso não exista
+    if (!resultButton) {
+        resultButton = document.createElement('button');
+        resultButton.classList.add('btn-nextresult');
+        resultButton.textContent = 'Ver Resultado';
+        resultButton.disabled = true; 
+        resultButton.style.display = 'none'; 
+
+        // Evento de clique para mostrar os resultados
+        resultButton.addEventListener('click', () => {
+            showResults(); // Exibe os resultados
+        });
+
+        // Adiciona o botão ao container
+        document.getElementById('quiz-container').appendChild(resultButton);
+    }
+}
+
+/// Função para ativar o botão "Ver Resultado" e desativar "Próxima Pergunta"
+function enableResultButton() {
+    const nextButton = document.getElementById('btn-next'); // Botão "Próxima Pergunta"
+    const resultButton = document.querySelector('.btn-nextresult'); // Botão "Ver Resultado"
+
+    // Exibe o botão "Ver Resultado"
+    if (resultButton) {
+        resultButton.disabled = false; // Habilita o botão
+        resultButton.style.display = 'block'; // Torna o botão visível
+    }
+
+    // Oculta o botão "Próxima Pergunta"
+    if (nextButton) {
+        nextButton.style.display = 'none'; // Torna o botão invisível
+    }
+}
+
+// Quando o conteúdo da página for carregado
+document.addEventListener('DOMContentLoaded', () => {
+    // Configura o botão "Ver Resultado"
+    setupResultButton();
+
+    // Encontre a última subquestão (subquestion8)
+    const lastSubQuestion = document.getElementById('subquestion104');
+    
+    // Verifique se a subquestão existe
+    if (lastSubQuestion) {
+        lastSubQuestion.addEventListener('click', () => {
+            console.log('Última subquestão clicada.');
+            enableResultButton(); // Ativa o botão "Ver Resultado" e desativa "Próxima Pergunta"
+        });
+    } else {
+        console.error('Elemento com id "subquestion104" não encontrado!');
+    }
+});
+
+// Função para exibir o botão "Ver Resultado" e ocultar "Próxima Pergunta"
+function showResultButton() {
+    const nextButton = document.getElementById('btn-next');
+    const resultButton = document.getElementById('btn-nextresult');
+
+    // Oculta o botão "Próxima Pergunta"
+    nextButton.style.display = 'none';
+
+    // Exibe o botão "Ver Resultado"
+    resultButton.style.display = 'inline-block';  // Garante que ele fique visível na mesma posição
+}
+
+// Adiciona evento de clique ao último item (exemplo: subquestionX)
+document.addEventListener('DOMContentLoaded', function() {
+    const subquestion104 = document.getElementById('subquestion104');  // ID da última pergunta
+    const nextButton = document.getElementById('btn-nextresult');    // O botão "Ver Resultado"
+    const nextResult = document.getElementById('btn-next');    // O botão "Próxima Pergunta"
+
+  
+
+    // Verifica se ambos os elementos estão disponíveis
+    if (subquestion104 && nextButton) {
+
+        // Adiciona evento de clique à última pergunta (subquestion104)
+        subquestion104.addEventListener('click', function() {
+            // Altera o texto do botão para "Ver Resultado" quando a última pergunta for clicada
+            nextButton.textContent = 'Ver Resultado'; 
+            nextButton.disabled = false; // Garante que o botão esteja habilitado
+
+            // Opcionalmente, se o botão estiver oculto ou desabilitado inicialmente:
+            nextButton.style.display = 'inline-block'; // Torna o botão visível (se necessário)
+        });
+
+        // Adiciona evento de clique ao botão "Ver Resultado"
+        nextButton.addEventListener('click', function() {
+            // Verifica se o botão foi alterado para "Ver Resultado"
+            if (nextButton.textContent === 'Ver Resultado') {
+                // Gera os dados (ajuste conforme necessário para pegar as respostas selecionadas)
+                const totalizer = generateTotalizer(selectedAnswers);  // Atualize conforme sua lógica de respostas
+                const resultUrl = `/resultdisc?D=${totalizer.D}&I=${totalizer.I}&E=${totalizer.E}&C=${totalizer.C}`;
+
+                console.log("Redirecionando para:", resultUrl);  // Exibe a URL no console
+
+                // Redireciona para a página de resultados
+                window.location.href = resultUrl;
+            }
+        });
+
+    } else {
+        console.log('subquestion104 ou nextButton não encontrado.');
+    }
+});
+
+// Função para abrir o modal
+function openModal() {
+    // Verifique se o elemento existe antes de tentar acessá-lo
+    var instructionsModal = document.getElementById("instructionsModal");
+    var formContainer = document.getElementById("quiz-form");
+
+    if (instructionsModal && formContainer) {
+        instructionsModal.style.display = "block";  // Exibe o modal
+        formContainer.style.display = "none";  // Esconde o formulário
+    } else {
+        console.error("Os elementos 'instructionsModal' ou 'formContainer' não foram encontrados.");
+    }
+}
+
+// Função para fechar o modal e exibir o formulário
+function closeModal() {
+    var instructionsModal = document.getElementById("instructionsModal");
+    var formContainer = document.getElementById("quiz-form");
+
+    if (instructionsModal && formContainer) {
+        instructionsModal.style.display = "none";  // Esconde o modal
+        formContainer.style.display = "block";  // Exibe o formulário
+    } else {
+        console.error("Os elementos 'instructionsModal' ou 'formContainer' não foram encontrados.");
+    }
+}
+
+// Garantir que o JavaScript seja executado somente após o carregamento da página
+document.addEventListener('DOMContentLoaded', function() {
+    // Ao carregar a página, abre automaticamente o modal com as instruções
+    openModal();
+});
+
+
+</script>
+</head>
+<body>
+    <header>
+        <div class="title">GRUPO BRBPO <span>| FORMULÁRIO DISC</span></div>
+    </header>
+    <div class="blue-bar">
+        <a href="/process" class="portal-button">PORTAL DO CANDIDATO</a>
+        <a href="/formdisc" class="portal-button">FORMULÁRIO DISC</a>           
+        </div>
+    </div>
+    
+ <!-- Modal com as instruções -->
+ <div id="instructionsModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>Instruções para Preenchimento</h2>
+      <p><strong>1. Não pense muito para responder!</strong> O objetivo é captar a sua primeira impressão, o que vem à mente de forma natural. Responda com o instinto!</p>
+      <p><strong>2. Enumere as opções de 1 a 4:</strong> A opção que você MAIS se identifica deve ser marcada com o número 4, e a opção que você MENOS se identifica, com o número 1.</p>
+      <p><strong>3. Após finalizar:</strong> Será gerado um painel informando seu estilo de comportamento dominante.</p>           
+      <button onclick="closeModal()">Fechar e Continuar</button>
+    </div>
+  </div>
+  </div>
+    <div class="quiz-container">
+        <h1>Teste DISC</h1>
+        <p>Selecione o número 4 para a opção que você MAIS se identifica e 1 para a que você MENOS se identifica.</p>
+
+        <form id="quiz-form" action="/submit-disc" method="POST">
+            <!-- Pergunta 1 -->
+            <div class="quiz-question" id="question1">
+                <h3 class="question-title" style="margin-bottom: 20px;">1. Em um restaurante. Estou esperando uma mesa e o garçom me diz que em 10 minutos terei uma mesa, porém passam 20 minutos:</h3>
+                <div class="subquestion" id="subquestion1">
+                    <label>a) Me aborreço e digo ao garçom que já se passou o dobro do tempo, e lhe informo que se demorar muito irei embora e eles perderão um cliente.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion2">
+                    <label>b) Não me dou conta pois estou envolvido em uma conversa.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion3">
+                    <label>c) Não me fixo ao tempo, ainda que eu saiba do atraso, não falo nada.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion4">
+                    <label>d) Informo ao Garçom exatamente a hora que cheguei e exatamente o tempo que passou e peço que por favor me diga com exatidão quanto tempo ainda falta para que eu possa tomar uma decisão.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pergunta 2 -->
+            <div class="quiz-question" id="question2">
+                <h3 class="question-title" style="margin-bottom: 20px;"> 2. Tenho muita fome e pressa. O garçom me traz um prato que eu não pedi:</h3>
+                <div class="subquestion" id="subquestion5">
+                    <label>a) Digo de maneira direta que este não foi o prato que pedi.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion6">
+                    <label>b)  Chamo o garçom e converso com ele explicando que este não era o prato que eu havia pedido.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion7">
+                    <label>c) Fico calado e aceito o prato que me trouxeram.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion8">
+                    <label>d) Me incomodo e pergunto ao garçom de uma forma aborrecida se ele estava prestando atenção quando fiz meu pedido?</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pergunta 2 -->
+            <div class="quiz-question" id="question3">
+                <h3 class="question-title" style="margin-bottom: 20px;">3. Em uma reunião de amigos:</h3>
+                <div class="subquestion" id="subquestion9">
+                    <label>a) Eu gosto de convencer aos demais de minhas opiniões e gosto de falar sobre temas relacionados com meu trabalho.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion10">
+                    <label>b) Escuto as pessoas. As pessoas me procuram pois sou um excelente ouvinte. Escuto as pessoas com atenção.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion11">
+                    <label>c)  Falo muito e conto bastante piadas. Geralmente falo mais do que escuto.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion12">
+                    <label>d) Observo e analiso as pessoas, porém dou minha opinião. Todavia só dou minha opinião quando conheço o tema e quando o faço sou preciso.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pergunta 4-->
+            <div class="quiz-question" id="question4">
+                <h3 class="question-title" style="margin-bottom: 20px;">4. Meus companheiros de trabalho me descrevem como alguém:</h3>
+                <div class="subquestion" id="subquestion13">
+                    <label>a) Tranquilo, Paciente, Amável.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion14">
+                    <label>b) Social, Alegre, Gosta de Conversar.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion15">
+                    <label>c) Enérgico, Forte, Agressivo.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion16">
+                    <label>d) Concreto, Disciplinado, Metódico.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pergunta 5 -->
+            <div class="quiz-question" id="question5">
+                <h3 class="question-title" style="margin-bottom: 20px;">5. Em uma discussão:</h3>
+                <div class="subquestion" id="subquestion17">
+                    <label>a) Trato de dizer que não é para tanto, pois discutir me aborrece.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion18">
+                    <label>b) Busco ter a razão e não paro até que consiga. Gosto de discutir.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion19">
+                    <label>c) Odeio agressões, concordo com o que esta sendo dito para não precisar argumentar.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion20">
+                    <label>d) Me baseio nos fatos e busco comprovar meu ponto de vista de uma forma fundamentada e também espero que os demais hajam assim.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pergunta 6 -->
+            <div class="quiz-question" id="question6">
+                <h3 class="question-title" style="margin-bottom: 20px;">6. O que realmente me emociona na vida:</h3>
+                <div class="subquestion" id="subquestion21">
+                    <label>a) Os desafios, As novidades, Arriscar.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion22">
+                    <label>b) As surpresas, A diversão, O jogo.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion23">
+                    <label>c) A doçura, O carinho, Aceitação.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion24">
+                    <label>d) Aprender, Sabedoria e Conhecimento</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pergunta 7 -->
+            <div class="quiz-question" id="question7">
+                <h3 class="question-title" style="margin-bottom: 20px;">7. Se alguém me agride:</h3>
+                <div class="subquestion" id="subquestion25">
+                    <label>a) Fico calado e não demonstro o que sinto.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion26">
+                    <label>b) Escapo da situação ou pergunto a outra pessoa se ela é louca.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion27">
+                    <label>c) Devolvo a agressão pois necessito demonstrar minha insatisfação de imediato. Da mesma forma que me incomodo rapidamente me tranquilizo.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion28">
+                    <label>d) Me angustio, me privo e me resguardo, porém tento descobrir por que isso aconteceu. Demora algum tempo para que passe minha insatisfação.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pergunta 8 -->
+            <div class="quiz-question" id="question8">
+                <h3 class="question-title" style="margin-bottom: 20px;">8. Quando vou as compras.</h3>
+                <div class="subquestion" id="subquestion29">
+                    <label>a) Busco ofertas, os descontos me fascinam.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion30">
+                    <label>b) Me divirto indo as compras. Gosto de comprar presentes, dizem que sou um comprador compulsivo.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion31">
+                    <label>c) Sei o que quero e não gasto meu dinheiro se não encontro. Sou muito definido.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion32">
+                    <label>d) Sou indeciso, me dá muito trabalho decidir e escolher.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pergunta 9 -->
+            <div class="quiz-question" id="question9">
+                <h3 class="question-title" style="margin-bottom: 20px;">9. Que frase te descreve melhor:</h3>
+                <div class="subquestion" id="subquestion33">
+                    <label>a) Sou tranquilo e passivo, gosto das pessoas que são fáceis de conviver e que não me agridam. As pessoas me perguntam se nunca me aborreço.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion34">
+                    <label>b) Sou alegre e jovial. Se vejo alguém triste procuro levar alegria a está pessoa. As pessoas me perguntam se nunca me deprimo.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion35">
+                    <label>c) Sou ativo e enérgico, gosto de fazer várias coisas ao mesmo tempo, as pessoas perguntam se não me canso.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion36">
+                    <label>d) Sou analítico e observador, gosto de resolver problemas que me exijam pensar e de encontrar soluções. As pessoas me dizem que sou muito responsável e apreensivo.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pergunta 10 -->
+            <div class="quiz-question" id="question10">
+                <h3 class="question-title" style="margin-bottom: 20px;">10. Quando estou trabalhando em equipe sou:</h3>
+                <div class="subquestion" id="subquestion37">
+                    <label>a) O que organiza a parte estratégica com finalidade de conseguir uma maior probabilidade de êxito.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion38">
+                    <label>b) O que anima o ambiente fazendo com que todos tenham vontade.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion39">
+                    <label>c) O que manda e organiza.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion40">
+                    <label>d) O que apóia com propósito de se ter uma equipe unida.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pergunta 11 -->
+            <div class="quiz-question" id="question11">
+                <h3 class="question-title" style="margin-bottom: 20px;">11. Meus irmãos e as pessoas que me rodeiam , dizem que meus piores defeitos são:</h3>
+                <div class="subquestion" id="subquestion41">
+                    <label>a) Ser teimoso e quadrado.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion42">
+                    <label>b) Ser agressivo e temperamental.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion43">
+                    <label>c) Ser submisso e lento.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion44">
+                    <label>d) Ser distraído e desorganizado.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pergunta 12 -->
+            <div class="quiz-question" id="question12">
+                <h3 class="question-title" style="margin-bottom: 20px;">12. Alguma de minhas qualidades são:</h3>
+                <div class="subquestion" id="subquestion45">
+                    <label>a) Ser Determinado e seguro.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion46">
+                    <label>b) Ser Adaptado e pacífico.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion47">
+                    <label>c) Ser Otimista e alegre.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion48">
+                    <label>d) Ser Cumpridor e estável.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+           <!-- Pergunta 13 -->
+            <div class="quiz-question" id="question13">
+                <h3 class="question-title" style="margin-bottom: 20px;">13. Estou caminhando e esbarro com algum desconhecido:</h3>
+                <div class="subquestion" id="subquestion49">
+                    <label>a) Dou um passo ao lado e sem falar sigo meu caminho.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion50">
+                    <label>b) Dou um sorriso e sigo em frente.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion51">
+                    <label>c) Espero que a pessoa saia do meu caminho para poder seguir adiante.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion52">
+                    <label>d) Peço que me desculpe e sigo em frente.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+           <!-- Pergunta 14 -->
+            <div class="quiz-question" id="question14">
+                <h3 class="question-title" style="margin-bottom: 20px;">14. No trabalho me sobressaio em:</h3>
+                <div class="subquestion" id="subquestion53">
+                    <label>a) Na tomada de decisões rapidamente.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion54">
+                    <label>b) Nas relações públicas. </label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion55">
+                    <label>c) Na capacidade de me adaptar a equipes</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion56">
+                    <label>d) Na segurança de ter qualidade e pontualidade.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pergunta 15 -->
+            <div class="quiz-question" id="question15">
+                <h3 class="question-title" style="margin-bottom: 20px;">15. Meus defeitos no trabalho são:</h3>
+                <div class="subquestion" id="subquestion57">
+                    <label>a) Não gosto de delegar, prefiro trabalhar sozinho.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion58">
+                    <label>b) Não gosto que me digam o que fazer.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion59">
+                    <label>c) Trabalho mais sobre baixa pressão.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion60">
+                    <label>d) Desordenado e esquecido e as vezes impontual.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pergunta 16 -->
+            <div class="quiz-question" id="question16">
+                <h3 class="question-title" style="margin-bottom: 20px;">16. Minha mãe diz que quando criança eu era:</h3>
+                <div class="subquestion" id="subquestion61">
+                    <label>a) Obediente e tranquilo.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion62">
+                    <label>b) Mandão e exigente.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion63">
+                    <label>c) Alegre e conversava com todo mundo..</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion64">
+                    <label>d) Bem arrumado e eu não gostava de me sujar.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pergunta 17 -->
+            <div class="quiz-question" id="question17">
+                <h3 class="question-title" style="margin-bottom: 20px;">17. Ao me expressar:</h3>
+                <div class="subquestion" id="subquestion65">
+                    <label>a) Falo as coisas de maneira diplomática.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion66">
+                    <label>b) Quase não expresso o que sinto.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion67">
+                    <label>c) Falo de maneira indireta para não magoar.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion68">
+                    <label>d) Falo as coisas como são.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pergunta 18 -->
+            <div class="quiz-question" id="question18">
+                <h3 class="question-title" style="margin-bottom: 20px;">18. A emoção que demonstro com mais frequência é:</h3>
+                <div class="subquestion" id="subquestion69">
+                    <label>a) Medo.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion70">
+                    <label>b) Otimismo.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion71">
+                    <label>c) Não demonstro emoção.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion72">
+                    <label>d) Irritação.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pergunta 19 -->
+            <div class="quiz-question" id="question19">
+                <h3 class="question-title" style="margin-bottom: 20px;">19. Os professores me reconheciam por que:</h3>
+                <div class="subquestion" id="subquestion73">
+                    <label>a) Discutia muito e gostava de demonstrar tudo que eu sabia.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion74">
+                    <label>b) Bom estudante e bastante analítico.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion75">
+                    <label>c) Não interrompia e ficava calado.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion76">
+                    <label>d) Era muito amigável e gostava de conversar.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pergunta 20 -->
+            <div class="quiz-question" id="question20">
+                <h3 class="question-title" style="margin-bottom: 20px;">20. Características que mais te descrevem:</h3>
+                <div class="subquestion" id="subquestion77">
+                    <label>a) Auto-suficiente e ambicioso.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion78">
+                    <label>b) Preciso e exato.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion79">
+                    <label>c) Cooperativo e adaptável.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion80">
+                    <label>d) Despreocupado e popular.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pergunta 21 -->
+            <div class="quiz-question" id="question21">
+                <h3 class="question-title" style="margin-bottom: 20px;">21. Características que mais te descrevem:</h3>
+                <div class="subquestion" id="subquestion81">
+                    <label>a) Reservado e educado.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion82">
+                    <label>b) Amigo e conversador.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion83">
+                    <label>c) Tolerante e flexível.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion84">
+                    <label>d) Valente e ousado.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pergunta 22 -->
+            <div class="quiz-question" id="question22">
+                <h3 class="question-title" style="margin-bottom: 20px;">22. Características que mais te descrevem:</h3>
+                <div class="subquestion" id="subquestion85">
+                    <label>a) Obstinado, determinação para me defender.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion86">
+                    <label>b) Confiante, acredito nas pessoas.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion87">
+                    <label>c) Prudente, gosto de refletir bem sobre as coisas.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion88">
+                    <label>d) Pronto a servir, gosto de ajudar aos demais.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pergunta 23 -->
+            <div class="quiz-question" id="question23">
+                <h3 class="question-title" style="margin-bottom: 20px;">23. Características que mais te descrevem:</h3>
+                <div class="subquestion" id="subquestion89">
+                    <label>a) Brincalhão, chama a atenção das pessoas.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion90">
+                    <label>b) Empreendedor, força de vontade.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion91">
+                    <label>c) Generoso, se adapta aos demais.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion92">
+                    <label>d) Cuidadoso, cautela ao tomar decisões.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+           <!-- Pergunta 24 -->
+            <div class="quiz-question" id="question24">
+                <h3 class="question-title" style="margin-bottom: 20px;">24. Características que mais te descrevem:</h3>
+                <div class="subquestion" id="subquestion93">
+                    <label>a) Calmo, faz o que te pedem.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion94">
+                    <label>b) Envolvente, motiva aos demais.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion95">
+                    <label>c) Atrevido, crê em si próprio.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion96">
+                    <label>d) Disciplinado, organizado e limpo.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pergunta 25 -->
+            <div class="quiz-question" id="question25">
+                <h3 class="question-title" style="margin-bottom: 20px;">25. Características que mais te descrevem:</h3>
+                <div class="subquestion" id="subquestion97">
+                    <label>a) Culto, busca ter conhecimento.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion98">
+                    <label>b) Culto, busca ter conhecimento.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion99">
+                    <label>c) Harmonioso, aberto a sugestões.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion100">
+                    <label>d) Confrontante, gosta de argumentar.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Pergunta 26 -->
+            <div class="quiz-question" id="question26">
+                <h3 class="question-title" style="margin-bottom: 20px;">26. Características que mais te descrevem:</h3>
+                <div class="subquestion" id="subquestion101">
+                    <label>a) Humilde, compassivo (condolente) com as pessoas.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion102">
+                    <label>b) Carismático, atrai as pessoas, desinibido.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion103">
+                    <label>c) Tem atitude, persuasivo, convincente.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+                <div class="subquestion" id="subquestion104">
+                    <label>d) Sistemático, cético, precavido.</label>
+                    <div class="answer-options">
+                        <button type="button" class="answer-option" data-weight="1" onclick="selectOption(event)">1</button>
+                        <button type="button" class="answer-option" data-weight="2" onclick="selectOption(event)">2</button>
+                        <button type="button" class="answer-option" data-weight="3" onclick="selectOption(event)">3</button>
+                        <button type="button" class="answer-option" data-weight="4" onclick="selectOption(event)">4</button>
+                    </div>
+                </div>
+            </div>
+            <!-- // Barra de progresso -->
+            <div class="progress-container">
+                <div id="progress-bar" class="progress-bar"></div>
+                <span id="progress-text"class="progress-text">1/2</span>
+            </div>
+            <button type="button" id="btn-next" class="btn-next" onclick="nextQuestion()">Próxima Pergunta</button>
+            <button type="button" class="btn-nextresult" id="btn-nextresult">Ver Resultado</button>
+            
+        </form>
+    </div>   
+
+</body>
+</html>

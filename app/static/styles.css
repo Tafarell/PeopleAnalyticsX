@@ -1,0 +1,1095 @@
+/* Estilos Globais */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+/* Cabeçalho */
+header {
+    background-color: white;
+    padding: 10px 40px;
+    border-bottom: 1px solid #003366;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+/* Estilo do título */
+header .title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #003366;
+    left: 0px;
+}
+
+/* Responsividade para telas até 1024px (tablets) */
+@media (max-width: 1024px) {
+    header .title {
+        font-size: 20px; /* Ajuste no tamanho da fonte para telas menores */
+    }
+}
+
+/* Responsividade para telas até 768px (tablets e smartphones grandes) */
+@media (max-width: 768px) {
+    header .title {
+        font-size: 18px; /* Redução no tamanho da fonte para dispositivos menores */
+    }
+}
+
+/* Responsividade para telas até 480px (smartphones pequenos) */
+@media (max-width: 480px) {
+    header .title {
+        font-size: 16px; /* Ajuste ainda menor para caber em telas pequenas */
+    }
+}
+
+/* Estilo do título */
+header .title span {
+    font-weight: normal;
+    margin-left: 5px;
+}
+
+/* Responsividade para telas até 1024px (tablets) */
+@media (max-width: 1024px) {
+    header .title span {
+        font-size: 1.2rem; /* Ajuste do tamanho da fonte para telas menores */
+        margin-left: 3px; /* Reduzir a margem para otimizar o espaço */
+    }
+}
+
+/* Responsividade para telas até 768px (tablets e smartphones grandes) */
+@media (max-width: 768px) {
+    header .title span {
+        font-size: 1.1rem; /* Reduzir um pouco mais o tamanho da fonte */
+        margin-left: 2px; /* Ajuste mais apertado da margem */
+    }
+}
+
+/* Responsividade para telas até 480px (smartphones pequenos) */
+@media (max-width: 480px) {
+    header .title span {
+        font-size: 1rem; /* Font-size menor para caber melhor em telas pequenas */
+        margin-left: 0; /* Remover a margem para evitar o deslocamento */
+    }
+}
+
+/* Barra Azul */
+.blue-bar {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    background-color: #003366; 
+    padding: 10px; 
+}
+
+.portal-button {
+    width: 100%; /* Largura total do botão */
+    max-width: 300px; /* Tamanho máximo de 300px para não ultrapassar o limite */
+    text-align: center;
+    text-decoration: none;
+    background-color: #003366;
+    color: #fff; /* Garantindo que o texto seja visível */
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    display: inline-block; /* Garante que o botão seja um bloco inline */
+    box-sizing: border-box; /* Inclui o padding no cálculo da largura */
+    margin: 5px; /* Centraliza os botões */
+}
+
+/* Efeito hover */
+.portal-button:hover {
+    background-color: #00509e; /* Cor de fundo diferente no hover */
+    color: #fff; /* Cor do texto alterada no hover */
+}
+
+/* Responsividade para telas pequenas e médias */
+@media (max-width: 1024px) {
+    .portal-button {
+        width: 100%; /* Largura total para garantir o mesmo tamanho em dispositivos menores */
+        padding: 10px 18px; /* Ajuste no espaçamento */
+        font-size: 1.1rem; /* Ajuste no tamanho da fonte */
+        margin: 0px auto;
+    }
+}
+
+/* Responsividade para telas menores que 768px */
+@media (max-width: 768px) {
+    .portal-button {
+        width: 100%; /* Largura total para garantir o mesmo tamanho */
+        padding: 10px 16px; /* Ajuste do padding */
+        font-size: 1rem; /* Redução do tamanho da fonte */
+        margin: 0px;
+    }
+}
+
+/* Responsividade para telas muito pequenas (smartphones) */
+@media (max-width: 480px) {
+    .portal-button {
+        width: 100%; /* Largura total para garantir o mesmo tamanho */
+        padding: 10px 14px; /* Ajuste do padding para caber melhor */
+        font-size: 0.95rem; /* Menor tamanho de fonte para smartphones */
+        margin: 0px;
+    }
+}
+
+/* Estilo do link dentro da barra azul */
+.blue-bar a {
+    text-decoration: none;
+    font-size: 16px; /* Tamanho de fonte padrão */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: 2px solid white;
+    transition: background-color 0.3s ease;
+    margin: 5px;
+}
+
+/* Efeito de hover */
+.blue-bar a:hover {
+    background-color: white;
+    color: #003366;
+}
+
+/* Responsividade para telas até 1024px (tablets) */
+@media (max-width: 1024px) {
+    .blue-bar {
+        text-align: center; /* Centraliza o conteúdo dentro da barra */
+    }
+
+    .blue-bar a {
+        font-size: 12px; /* Redução do tamanho da fonte para dispositivos médios */
+        padding: 8px 16px; /* Ajuste no padding */
+        display: inline-block; /* Garante que o link seja tratado como um bloco */
+        width: 100%; /* Faz o link ocupar toda a largura disponível */
+        text-align: center; /* Garante que o texto dentro do link seja centralizado */
+    }
+}
+
+/* Responsividade para telas até 768px (tablets e smartphones grandes) */
+@media (max-width: 768px) {
+    .blue-bar {
+        text-align: center; /* Centraliza o conteúdo dentro da barra */
+    }
+
+    .blue-bar a {
+        font-size: 12px; /* Mantém o tamanho da fonte reduzido */
+        padding: 8px 15px; /* Ajuste no padding para melhorar a estética */
+        display: inline-block; /* Garante que o link seja tratado como um bloco */
+        width: 100%; /* Faz o link ocupar toda a largura disponível */
+        text-align: center; /* Garante que o texto dentro do link seja centralizado */
+    }
+}
+
+/* Responsividade para telas até 480px (smartphones pequenos) */
+@media (max-width: 480px) {
+    .blue-bar {
+        text-align: center; /* Centraliza o conteúdo dentro da barra */
+    }
+
+    .blue-bar a {
+        font-size: 10px; /* Menor tamanho de fonte para dispositivos pequenos */
+        padding: 6px 12px; /* Ajuste do padding para dispositivos pequenos */
+        display: inline-block; /* Garante que o link seja tratado como um bloco */
+        width: 100%; /* Faz o link ocupar toda a largura disponível */
+        text-align: center; /* Garante que o texto dentro do link seja centralizado */
+    }
+}
+
+/* Container da Página */
+.page-container {
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    max-width: 1200px; /* Largura máxima em telas grandes */
+    margin: 20px auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    box-sizing: border-box; /* Garante que padding não afete a largura */
+}
+
+/* Responsividade para telas até 1024px (tablets) */
+@media (max-width: 1024px) {
+    .page-container {
+        max-width: 95%; /* Ajuste para que ocupe 95% da largura da tela */
+        margin: 20px; /* Margin um pouco mais apertada */
+        padding: 15px; /* Redução do padding */
+    }
+}
+
+/* Responsividade para telas até 768px (tablets e grandes smartphones) */
+@media (max-width: 768px) {
+    .page-container {
+        max-width: 90%; /* Ocupa 90% da largura da tela */
+        padding: 12px; /* Diminui o padding */
+    }
+}
+
+/* Responsividade para telas até 480px (smartphones pequenos) */
+@media (max-width: 480px) {
+    .page-container {
+        max-width: 100%; /* O container ocupa toda a largura disponível */
+        padding: 10px; /* Ajuste de padding para caber melhor */
+        margin: 10px; /* Margem reduzida para se ajustar em telas pequenas */
+    }
+}
+
+h2 {
+    color: #333; /* Cor do texto */
+    margin-bottom: 20px; /* Espaçamento abaixo do título */
+    font-size: 1.8rem; /* Tamanho da fonte para telas grandes */
+}
+
+/* Responsividade para telas pequenas e médias */
+@media (max-width: 1024px) {
+    h2 {
+        font-size: 1.6rem; /* Ajuste do tamanho da fonte em telas menores */
+        margin-bottom: 18px; /* Ajuste da margem inferior */
+    }
+}
+
+/* Responsividade para telas menores que 768px */
+@media (max-width: 768px) {
+    h2 {
+        font-size: 1.4rem; /* Redução adicional do tamanho da fonte */
+        margin-bottom: 16px; /* Menor margem inferior */
+    }
+}
+
+/* Responsividade para telas muito pequenas (smartphones) */
+@media (max-width: 480px) {
+    h2 {
+        font-size: 1.2rem; /* Fonte ainda menor em smartphones */
+        margin-bottom: 14px; /* Menor margem inferior em dispositivos muito pequenos */
+    }
+}
+
+/* Estilo do label */
+label {
+    display: block;
+    margin-bottom: 15px; /* Espaço abaixo do label */
+   
+}
+
+/* Responsividade para telas pequenas e médias */
+@media (max-width: 1024px) {
+    label {
+        margin-bottom: 12px; /* Ajustando a margem para telas menores */
+        font-size: 1.1rem; /* Ajuste no tamanho da fonte */
+    }
+}
+
+/* Responsividade para telas menores que 768px */
+@media (max-width: 768px) {
+    label {
+        margin-bottom: 10px; /* Margem um pouco menor em telas menores */
+        font-size: 1rem; /* Redução no tamanho da fonte */
+    }
+}
+
+/* Responsividade para telas muito pequenas (smartphones) */
+@media (max-width: 480px) {
+    label {
+        margin-bottom: 8px; /* Menor margem inferior em smartphones */
+        font-size: 0.9rem; /* Tamanho de fonte ainda menor em dispositivos muito pequenos */
+    }
+}
+
+
+/* Estilo para os botões */
+.options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; 
+    justify-content: space-between; 
+    margin-bottom: 20px;
+}
+
+.option {
+    flex: 1 1 calc(20% - 10px); /* 5 botões por linha */
+    max-width: calc(20% - 10px);
+    padding: 12px 8px; /* Redução de padding para caber melhor */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    background-color: #f8f9fa; /* Cor de fundo padrão */
+    color: #333; /* Cor do texto */
+    transition: all 0.3s ease-in-out;
+    box-sizing: border-box; /* Garante que padding seja incluído na largura do botão */
+    font-size: 0.9rem; /* Reduzir mais o tamanho da fonte */
+    word-wrap: break-word; /* Quebra de linha para evitar que o texto ultrapasse os limites */
+}
+
+/* Efeito hover (quando o botão é hover) */
+.option:hover {
+    background-color: #e2e6ea; /* Cor de fundo ao passar o mouse */
+    color: #007bff; /* Cor do texto ao passar o mouse */
+}
+
+/* Efeito quando o botão é selecionado */
+.option.selected {
+    background-color: #007bff; /* Cor de fundo quando o botão for selecionado */
+    color: white; /* Cor do texto quando o botão for selecionado */
+    border-color: #007bff; /* Cor da borda quando selecionado */
+}
+
+/* Responsividade para telas de 1024px ou menores */
+@media (max-width: 1024px) {
+    .option {
+        flex: 1 1 calc(30% - 10px); /* 3 botões por linha */
+        font-size: 0.8rem; /* Diminuir ainda mais o tamanho da fonte */
+        padding: 10px 6px; /* Ajustar o padding para caber melhor */
+    }
+}
+
+/* Responsividade para telas de 768px ou menores */
+@media (max-width: 768px) {
+    .option {
+        flex: 1 1 calc(45% - 10px); /* 2 botões por linha */
+        font-size: 0.75rem; /* Reduzir o tamanho da fonte mais ainda */
+        padding: 8px 4px; /* Reduzir ainda mais o padding */
+    }
+}
+
+/* Responsividade para telas de 480px ou menores */
+@media (max-width: 480px) {
+    .option {
+        flex: 1 1 100%; /* 1 botão por linha */
+        padding: 6px 4px; /* Ajuste do padding */
+        font-size: 0.7rem; /* Tamanho da fonte ainda menor para smartphones */
+    }
+}
+
+/* Resultado */
+.resultado {
+    font-size: 36px;
+    font-weight: bold;
+    color: #333;
+    padding: 10px 30px;
+    margin: 20px 0;
+    border: 2px solid transparent; 
+    border-radius: 5px;
+}
+
+/* Aprovado */
+.resultado.aprovado {
+    border-color: #28a745; 
+    background-color: #eaffea; 
+    color: #155724; 
+    text-align: center; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    }
+
+/* Reprovado */
+.resultado.reprovado {
+    border-color: #721c24; 
+    background-color: #f8d7da; 
+    color: #721c24; 
+    text-align: center; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+}
+
+/* Mensagem */
+.mensagem {
+    font-size: 20px;
+    margin-top: 20px;
+    color: #555;
+    text-align: center;
+}
+
+/* Cursos Recomendados */
+.curso-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.curso-card {
+    width: 250px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.curso-card img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+}
+
+.curso-card .info {
+    padding: 15px;
+}
+
+.curso-card .info h3 {
+    font-size: 18px;
+    color: #333;
+    margin: 0 0 10px;
+}
+
+.curso-card .info a {
+    display: inline-block;
+    text-decoration: none;
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.curso-card .info a:hover {
+    background-color: #0056b3;
+}
+
+/* Botão Voltar */
+.voltar-btn {
+    display: inline-block; 
+    text-decoration: none;
+    background-color: #003366;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 5px;
+    font-size: 20px;
+    text-align: center; 
+    margin: 40px auto; 
+}
+
+.voltar-btn:hover {
+    background-color: #001f4d;
+    
+    
+}
+/* Botão Enviar */
+.submit-btn {
+
+    margin: 40px auto; 
+    display: block; 
+    text-decoration: none;
+    background-color: #003366;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 5px;
+    font-size: 20px;
+    text-align: center; 
+}
+
+.submit-btn:hover {
+    background-color: #001f4d;
+         
+}
+
+.voltar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 10px; 
+    margin-bottom: 0; 
+}
+
+/* Seção Inscrições Abertas */
+.section {
+    margin: 30px auto;
+    max-width: 90%;
+    background-color: white;
+    border-radius: 10px;
+    border: 2px solid #28a745;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    padding: 20px;
+}
+
+/* Cabeçalho da seção */
+.section .header {
+    background-color: #eaffea;
+    padding: 15px 20px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #28a745;
+    border-bottom: 2px solid #28a745;
+    text-align: left;
+}
+
+/* Descrição da seção */
+.section .description {
+    padding: 15px 20px;
+    font-size: 16px;
+    color: #555;
+}
+
+/* Responsividade para telas pequenas e médias */
+@media (max-width: 1024px) {
+    .section {
+        padding: 15px; /* Ajuste do padding para telas menores */
+    }
+    .section .header {
+        font-size: 20px; /* Ajuste no tamanho da fonte do cabeçalho */
+    }
+    .section .description {
+        font-size: 14px; /* Redução do tamanho da fonte da descrição */
+    }
+}
+
+/* Responsividade para telas menores que 768px */
+@media (max-width: 768px) {
+    .section {
+        padding: 10px; /* Reduzindo o padding para telas menores */
+    }
+    .section .header {
+        font-size: 18px; /* Ajuste no tamanho da fonte do cabeçalho */
+    }
+    .section .description {
+        font-size: 13px; /* Redução do tamanho da fonte da descrição */
+    }
+}
+
+/* Responsividade para telas muito pequenas (smartphones) */
+@media (max-width: 480px) {
+    .section {
+        padding: 10px; /* Menos padding para smartphones */
+    }
+    .section .header {
+        font-size: 16px; /* Fonte menor para o cabeçalho em smartphones */
+    }
+    .section .description {
+        font-size: 12px; /* Fonte menor para a descrição em smartphones */
+    }
+}
+
+/* Tabela */
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 15px;
+    text-align: left;
+}
+
+table th {
+    background-color: #f1f1f1;
+    color: #003366;
+    font-size: 16px;
+}
+
+table td {
+    font-size: 14px;
+    color: #333;
+}
+
+table .view-button {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 15px;
+    text-align: center;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    display: inline-block;
+}
+
+table .view-button:hover {
+    background-color: #0056b3;
+}
+
+.large-image {
+    width: 100vw;       
+    height: 100vh;      
+    object-fit: cover;  
+    display: block;
+    margin: 0;
+}
+
+/* Responsividade para telas de até 1024px (tablets) */
+@media (max-width: 1024px) {
+    .large-image {
+        width: 100%;        /* Ajuste a largura para 100% */
+        height: auto;       /* Ajuste a altura para manter a proporção */
+    }
+}
+
+/* Responsividade para telas de até 768px (smartphones grandes) */
+@media (max-width: 768px) {
+    .large-image {
+        width: 100%;        /* Largura 100% para dispositivos menores */
+        height: auto;       /* Ajusta altura para manter a proporção */
+    }
+}
+
+/* Responsividade para telas de até 480px (smartphones pequenos) */
+@media (max-width: 480px) {
+    .large-image {
+        width: 100%;        /* Largura 100% */
+        height: auto;       /* Ajuste a altura automaticamente */
+    }
+}
+
+/* Estilo do título */
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: left;
+    padding-left: 0px;
+}
+
+/* Responsividade para telas até 1024px (tablets) */
+@media (max-width: 1024px) {
+    .title {
+        font-size: 22px; /* Ajuste do tamanho da fonte para telas menores */
+        padding-left: 0px; /* Reduzir o padding para economizar espaço */
+    }
+}
+
+/* Responsividade para telas até 768px (tablets e smartphones grandes) */
+@media (max-width: 768px) {
+    .title {
+        font-size: 20px; /* Redução no tamanho da fonte para telas menores */
+        padding-left: 0px; /* Reduzir ainda mais o padding para otimizar o espaço */
+    }
+}
+
+/* Responsividade para telas até 480px (smartphones pequenos) */
+@media (max-width: 480px) {
+    .title {
+        font-size: 18px; /* Menor tamanho de fonte para caber melhor em telas pequenas */
+        padding-left: 0px; /* Ajuste do padding para telas muito pequenas */
+    }
+}
+
+/* Estilo para o botão */
+.entrar-btn {
+    background-color: #003366; 
+    color: white;
+    padding: 12px 25px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    display: inline-block; /* Garante que o botão seja um bloco inline */
+    box-sizing: border-box; /* Inclui padding no cálculo da largura */
+}
+
+/* Efeito hover */
+.entrar-btn:hover {
+    background-color: #00509e; /* Cor mais clara no hover */
+}
+
+/* Responsividade para telas de 1024px ou menores */
+@media (max-width: 1024px) {
+    .entrar-btn {
+        font-size: 14px; /* Diminuir o tamanho da fonte */
+        padding: 10px 20px; /* Ajustar o padding */
+    }
+}
+
+/* Responsividade para telas de 768px ou menores */
+@media (max-width: 768px) {
+    .entrar-btn {
+        font-size: 13px; /* Reduzir mais o tamanho da fonte */
+        padding: 8px 18px; /* Ajuste no padding */
+        width: auto; /* Garantir que o botão tenha tamanho auto */
+    }
+
+    /* Alinha o botão à direita */
+    .entrar-btn-container {
+        display: flex;
+        justify-content: flex-end; /* Alinha o botão à direita */
+        width: 100%;
+    }
+}
+
+/* Responsividade para telas de 480px ou menores */
+@media (max-width: 480px) {
+    .entrar-btn {
+        font-size: 12px; /* Reduzir o tamanho da fonte para dispositivos muito pequenos */
+        padding: 8px 16px; /* Ajuste do padding para dispositivos móveis */
+    }
+
+    /* Alinha o botão à direita */
+    .entrar-btn-container {
+        display: flex;
+        justify-content: flex-end; /* Alinha o botão à direita */
+        width: 100%;
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
+}
+
+.quiz-container {
+    width: 90%;
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+}
+
+h1 {
+    font-size: 2rem;
+    color: #003366;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+p {
+    font-size: 1.1rem;
+    color: #555;
+    text-align: center;
+    margin-bottom: 30px;
+    margin-top: 20px
+}
+
+.quiz-question {
+    margin-bottom: 30px;
+}
+
+.quiz-question-title {
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: #333;
+    padding: 10px;
+    margin-bottom: 25px;
+    border-left: 5px solid #00796b;
+    background-color: #f1f8f6;
+    text-align: left;
+}
+
+.quiz-question h2 {
+    font-size: 1.2rem;
+    color: #333;
+    font-weight: normal;
+    margin-bottom: 15px;
+}
+
+.quiz-question p {
+    font-size: 1rem;
+    margin-bottom: 20px;
+}
+
+.answer-options {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.answer-option {
+    flex: 1;
+    padding: 15px;
+    font-size: 1.1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    opacity: 0.7;
+}
+
+.answer-option:hover {
+    background-color: #0056b3;
+    opacity: 1;
+}
+
+.answer-option.selected {
+    background-color: #28a745 !important; /* Destaque em verde */
+    opacity: 1 !important;
+}
+
+.answer-option.disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.highlight {
+    font-size: 1.2rem;
+    color: #28a745;
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.next-btn {
+    padding: 15px;
+    font-size: 1.1rem;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    display: none;
+}
+
+.next-btn.active {
+    display: block;
+}
+
+
+.progress-text {
+    font-size: 1rem;
+    color: #333;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.answer-option.selected {
+            background-color: green;
+            color: white;
+        }
+
+        .answer-option:disabled {
+            background-color: #ddd;
+            cursor: not-allowed;
+        }
+
+        .next-button-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .next-button-container button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .next-button-container button:hover {
+            background-color: #45a049;
+        }
+
+     
+        .progress {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 0;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        .warning {
+            border: 2px solid red;
+            background-color: #ffcccc;
+        }
+
+       /* Estilo para o botão "Próxima Pergunta" */
+        .btn-next {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;  /* Cor de fundo azul */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: 100%;  /* Ocupa toda a largura disponível */
+            cursor: pointer;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        #btn-next:hover {
+            background-color: #0056b3;  /* Cor de fundo ao passar o mouse */
+        }
+
+        /* Estilo para o botão "Ver Resultado" */
+        .btn-nextresult {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;  /* Cor de fundo azul */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: 100%;  /* Ocupa toda a largura disponível */
+            cursor: pointer;
+            text-align: center;
+            margin-top: 10px;
+            display: none;  /* Inicialmente invisível */
+        }
+
+        #btn-nextresult:hover {
+            background-color: #0056b3;  /* Cor de fundo ao passar o mouse */
+        }
+
+        /* Estilo para o botão desativado (caso precise) */
+        .btn-nextresult:disabled {
+            background-color: #ddd;  /* Cor cinza para botão desativado */
+            cursor: not-allowed;
+        }
+
+        .progress-bar {
+            margin-top: 30px;
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        .progress-bar-container {
+            margin-bottom: 20px; /* Adiciona espaço abaixo da barra de progresso */
+        }
+
+        .quiz-question {
+    display: none;
+}
+
+.quiz-question.active {
+    display: block;
+}
+
+.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.selected {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.subquestion .answer-option {
+    margin: 5px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.subquestion .answer-option.selected {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.progress-container {
+    width: 100%;
+    height: 10px;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+/* Container da barra de progresso */
+.progress-container {
+    width: 100%;
+    height: 10px;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: #4CAF50;
+    border-radius: 5px;
+}
+
+/* Estilos do Modal */
+.modal {
+    display: none; /* Inicialmente escondido */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Fundo semitransparente */
+    padding-top: 50px;
+    transition: opacity 0.3s ease;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 500px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.close {
+    color: #333;
+    font-size: 28px;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+button {
+    background-color: #003366;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #005bb5;
+}
+
+/* Estilo do botão de abrir o formulário */
+.entrar-btn {
+    background-color: #003366;
+    color: white;
+    padding: 12px 25px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 16px;
+    display: inline-block;
+    margin: 10px auto;
+    transition: background-color 0.3s;
+    text-align: center;
+}
+
+.entrar-btn:hover {
+    background-color: #005bb5;
+}
+
+/* Estilos de Responsividade */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 90%;
+    }
+}
