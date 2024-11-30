@@ -7,7 +7,7 @@ import random
 app = Flask(__name__)
 
 # Caminho do modelo
-MODEL_PATH = r'C:\Users\Tafarell Lucas\projetos\people_analytics_project\app\models\model_supervisao.pkl'
+MODEL_PATH = 'app/models/model_supervisao.pkl'
 
 # Carregar o modelo
 try:
