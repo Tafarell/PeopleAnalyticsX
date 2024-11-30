@@ -6,6 +6,9 @@ import random
 
 app = Flask(__name__)
 
+# Porta dinâmica fornecida pelo Render
+port = int(os.getenv('PORT', 5000))
+
 # Caminho do modelo
 MODEL_PATH = 'app/models/model_supervisao.pkl'
 
