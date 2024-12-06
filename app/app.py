@@ -149,5 +149,51 @@ def resultado():
 
     return render_template('resultado.html', resultado=resultado, cursos=cursos)
 
+# Função para gerar o HTML do e-mail
+def generate_disc_html(name, cpf, result):
+    return f"""
+    <html>
+        <body>
+            <h2>Resultado do Teste DISC</h2>
+            <p><strong>Nome:</strong> {name}</p>
+            <p><strong>CPF:</strong> {cpf}</p>
+            <p><strong>Resultado:</strong> {result}</p>
+        </body>
+    </html>
+    """
+
+@app.route('/send-email', methods=['POST'])
+def send_email():
+    data = request.get_json()
+    to = data.get('to')
+    subject = data.get('subject')
+    body = data.get('body')
+
+    # Configurar o servidor de e-mail (use variáveis de ambiente para credenciais)
+    email_user = "tafarell.lucas@gmail.com"
+    email_password = "useo nzcw byff zfwj"
+    smtp_server = "smtp.gmail.com"
+    smtp_port = 587
+
+    try:
+        # Configuração do e-mail
+        msg = MIMEMultipart()
+        msg['From'] = email_user
+        msg['To'] = to
+        msg['Subject'] = subject
+        msg.attach(MIMEText(body, 'html'))
+
+        # Envio do e-mail
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(email_user, email_password)
+            server.sendmail(email_user, to, msg.as_string())
+
+        return jsonify({'success': True, 'message': 'E-mail enviado com sucesso'})
+
+    except Exception as e:
+        print(f"Erro ao enviar e-mail: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+    
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=port)
