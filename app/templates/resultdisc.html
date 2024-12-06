@@ -51,7 +51,7 @@ body {
 .chart-container {
     flex: 1;
     max-width: 700px; /* Tamanho máximo do gráfico */
-    height: 800px; /* Altura do gráfico */
+    height: 1000px; /* Altura do gráfico */
     padding: 20px;
     background-color: #f9f9f9;
     border-radius: 8px;
@@ -62,7 +62,7 @@ body {
 .profile-container {
     flex: 2;
     max-width: 700px;
-    height: 750px;
+    height: 1000px;
     padding: 20px;
     background-color: #f9f9f9;
     border-radius: 8px;
@@ -218,14 +218,16 @@ footer {
 <script>
     // Função para obter os parâmetros da URL
     function getURLParams() {
-        const params = new URLSearchParams(window.location.search);
-        return {
-            D: parseInt(params.get('D')) || 0,
-            I: parseInt(params.get('I')) || 0,
-            E: parseInt(params.get('E')) || 0,
-            C: parseInt(params.get('C')) || 0
-        };
-    }
+    const params = new URLSearchParams(window.location.search);
+    return {
+        D: parseInt(params.get('D')) || 0,
+        I: parseInt(params.get('I')) || 0,
+        E: parseInt(params.get('E')) || 0,
+        C: parseInt(params.get('C')) || 0,
+        fullname: decodeURIComponent(params.get('fullname')) || 'Nome não disponível',  // Corrigido para texto
+        fucpf: decodeURIComponent(params.get('cpf')) || 'CPF não disponível'  // Corrigido para texto
+    };
+}
 
     // Função para calcular o percentual de cada perfil
     function calculatePercentages(D, I, E, C) {
@@ -311,7 +313,10 @@ footer {
             },
             // Continue a mesma estrutura para os outros perfis: Influente, Estável, Conformidade
         };
-
+// Obtém os parâmetros da URL
+const params = getURLParams();
+    const fullname = params.fullname;  // Nome
+    const cpf = params.fucpf;  // CPF
         // Objeto com percentuais de cada perfil
 const percentuais = {
     Dominante: D_percent,
@@ -333,7 +338,13 @@ Object.keys(percentuais).forEach(profile => {
 });
 
 // Agora que maiorPerfil foi determinado, você pode construir o HTML
-let output = `<h2>Seu perfil é ${maiorPerfil}</h2>`;
+let output = `
+    <div>
+        <h3>Nome: ${fullname}</h3>
+        <h3>CPF: ${cpf}</h3>
+        <h2>Seu perfil é ${maiorPerfil}</h2>
+    </div>
+`;
 
 // Verificar se o perfil existe no objeto 'profiles'
 if (profiles[maiorPerfil]) {
@@ -425,7 +436,7 @@ const discChart = new Chart(ctx, {
             y: {
                 beginAtZero: true,
                 title: {
-                    display: true,
+                    display: false,
                     text: 'Perfil'
                 },
                 grid: {
@@ -439,9 +450,116 @@ const discChart = new Chart(ctx, {
 
 
     document.getElementById('profile-info').innerHTML = displayProfile(D_percent, I_percent, E_percent, C_percent);
+
+    document.addEventListener('DOMContentLoaded', () => {
+    const sendEmailBtn = document.getElementById('sendEmailBtn');
+
+    if (sendEmailBtn) {
+        console.log('Botão encontrado, adicionando evento...');
+
+        sendEmailBtn.addEventListener('click', function (event) {
+            event.preventDefault();
+            console.log('Botão clicado, enviando requisição para o servidor...');
+
+    
+// Função para obter os parâmetros da URL
+function getURLParams() {
+    const params = new URLSearchParams(window.location.search);
+    
+    return {
+        fullname: decodeURIComponent(params.get('fullname')) || 'Nome não disponível',
+        cpf: decodeURIComponent(params.get('cpf')) || 'CPF não disponível'
+    };
+}
+
+// Chamar a função para obter os parâmetros da URL e armazená-los em uma variável
+const params = getURLParams();
+const currentURL = window.location.href;
+
+// Usar os parâmetros obtidos na URL
+const fullname = params.fullname;
+const cpf = params.cpf;
+
+    // Gerar o corpo do e-mail com o resultado do DISC
+    const bodyContent = `
+    <h1>Resultado do Teste DISC</h1>
+    <p><strong>Nome:</strong> ${fullname}</p>
+    <p><strong>CPF:</strong> ${cpf}</p>
+    <p><strong>Link da Página:</strong> <a href="${currentURL}">${currentURL}</a></p>  <!-- Link da página atual -->
+`;
+
+    // Dados do e-mail
+            const emailData = {
+                to: 'tafarell.lucas@gmail.com',
+                subject: 'Resultado do Teste DISC',
+                body: bodyContent
+            };
+
+            fetch('http://127.0.0.1:5000/send-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(emailData)
+            })
+                
+        });
+    } else {
+        console.error('Elemento com ID "sendEmailBtn" não encontrado.');
+    }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+            const sendEmailBtn = document.getElementById('sendEmailBtn');
+            const thankYouModal = document.getElementById('thankYouModal');
+            const closeThankYouModalBtn = document.getElementById('closeThankYouModalBtn');
+            
+            // Variável para controlar o estado do modal
+            let isModalOpen = false;
+
+            // Exibe o modal quando o botão "Enviar Resultado" é clicado
+            sendEmailBtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                thankYouModal.style.display = 'block';
+                isModalOpen = true; // Define o modal como aberto
+            });
+
+            // Fecha o modal apenas ao clicar no botão de fechar
+            closeThankYouModalBtn.addEventListener('click', () => {
+                if (isModalOpen) { // Permite fechar apenas se o modal estiver aberto
+                    thankYouModal.style.display = 'none';
+                    isModalOpen = false; // Define o modal como fechado
+                    window.location.href = '/'; // Redireciona após fechar
+                }
+            });
+
+            // Proteção extra: força o modal a permanecer aberto se tentarem fechá-lo
+            setInterval(() => {
+                if (isModalOpen && thankYouModal.style.display !== 'block') {
+                    thankYouModal.style.display = 'block'; // Restaura o estado do modal
+                }
+            }, 100);
+
+            // Impede o fechamento ao clicar fora do modal
+            window.addEventListener('click', (event) => {
+                if (event.target === thankYouModal && isModalOpen) {
+                    thankYouModal.style.display = 'block'; // Restaura o estado se necessário
+                }
+            });
+        });
+
 </script>
+
+<div id="thankYouModal" class="modal">
+    <div class="modal-content">
+        <h2>Obrigado!</h2>
+        <p>Muito obrigado por preencher o formulário. Seu resultado foi encaminhado para o departamento de Recursos Humanos.</p>
+        <button id="closeThankYouModalBtn">Fechar</button>
+    </div>
+</div>
+
 <div class="voltar-container">
-    <a href="/formdisc" class="voltar-btn">Voltar ao início</a>
+    <button id="sendEmailBtn" class="sendemail-btn">Enviar Resultado</button>
 </div>
 
 </body>
