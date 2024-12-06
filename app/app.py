@@ -11,7 +11,7 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 # Caminho relativo do modelo
-model_path = r'C:\Users\Tafarell Lucas\projetos\people_analytics_project\app\models\model_supervisao.pkl'
+model_path = 'app/models/model_supervisao.pkl'
 
 # Verificar se o arquivo do modelo existe
 if not os.path.exists(model_path):
