@@ -3,14 +3,15 @@ import pandas as pd
 import joblib
 import os
 import random
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-# Porta dinâmica fornecida pelo Render
-port = int(os.getenv('PORT', 5000))
-
 # Caminho relativo do modelo
-model_path = 'app/models/model_supervisao.pkl'
+model_path = r'C:\Users\Tafarell Lucas\projetos\people_analytics_project\app\models\model_supervisao.pkl'
 
 # Verificar se o arquivo do modelo existe
 if not os.path.exists(model_path):
@@ -148,6 +149,7 @@ def resultado():
     cursos = random.sample(sugestoes_cursos, 2) if resultado == 'Reprovado' else []
 
     return render_template('resultado.html', resultado=resultado, cursos=cursos)
+
 
 # Função para gerar o HTML do e-mail
 def generate_disc_html(name, cpf, result):
